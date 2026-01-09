@@ -4,11 +4,10 @@ import com.rstracker.dto.MatchingDto;
 import com.rstracker.dto.ParticipantDto;
 import com.rstracker.entity.Matching;
 import com.rstracker.entity.MatchingStatus;
+import com.rstracker.entity.Participant;
 import com.rstracker.mapper.MatchingMapper;
 import com.rstracker.repository.MatchingRepository;
 import com.rstracker.repository.ParticipantRepository;
-import com.rstracker.util.MatchingCodeGenerator;
-import com.rstracker.util.ParticipantCodeGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,6 +55,7 @@ class MatchingServiceTest {
     
     @Test
     @DisplayName("매칭 생성 성공")
+    @SuppressWarnings("null")
     void createMatching_Success() {
         // given
         when(matchingRepository.existsByCode(anyString())).thenReturn(false);
@@ -78,16 +78,17 @@ class MatchingServiceTest {
     
     @Test
     @DisplayName("매칭 참여 성공")
+    @SuppressWarnings("null")
     void joinMatching_Success() {
         // given
         String code = "ABC123";
         when(matchingRepository.findByCode(code)).thenReturn(Optional.of(testMatching));
         when(participantRepository.countByMatchingId(anyLong())).thenReturn(1L);
-        when(participantRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(participantRepository.save(any(Participant.class))).thenAnswer(invocation -> invocation.getArgument(0));
         
         ParticipantDto expectedDto = new ParticipantDto();
         expectedDto.setParticipantCode("participant-code");
-        when(matchingMapper.toDto(any())).thenReturn(expectedDto);
+        when(matchingMapper.toDto(any(Participant.class))).thenReturn(expectedDto);
         
         // when
         ParticipantDto result = matchingService.joinMatching(code);

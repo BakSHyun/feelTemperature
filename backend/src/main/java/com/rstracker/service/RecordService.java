@@ -10,7 +10,6 @@ import com.rstracker.entity.Record;
 import com.rstracker.exception.BusinessException;
 import com.rstracker.exception.ResourceNotFoundException;
 import com.rstracker.mapper.RecordMapper;
-import com.rstracker.service.AnswerQueryService;
 import com.rstracker.repository.MatchingRepository;
 import com.rstracker.repository.QuestionChoiceRepository;
 import com.rstracker.repository.QuestionRepository;
@@ -19,9 +18,12 @@ import com.rstracker.service.temperature.TemperatureCalculationStrategy;
 import com.rstracker.util.RecordIdGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +115,40 @@ public class RecordService {
         record.setIsActive(false);
         recordRepository.save(record);
         log.info("Record deactivated: {}", recordId);
+    }
+
+    /**
+     * 기록 목록 조회 (페이징, 필터링, 정렬)
+     * 
+     * @param minTemp 최소 온도 (선택)
+     * @param maxTemp 최대 온도 (선택)
+     * @param isActive 활성 여부 (선택)
+     * @param startDate 시작 날짜 (선택)
+     * @param endDate 종료 날짜 (선택)
+     * @param pageable 페이징 정보
+     * @return 기록 목록 (페이징)
+     */
+    @Transactional(readOnly = true)
+    public Page<RecordDto> getRecords(
+            Double minTemp,
+            Double maxTemp,
+            Boolean isActive,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Pageable pageable) {
+        log.debug("Fetching records with filters: minTemp={}, maxTemp={}, isActive={}, startDate={}, endDate={}, pageable={}",
+                minTemp, maxTemp, isActive, startDate, endDate, pageable);
+        
+        // 필터 조건이 모두 없는 경우 전체 조회
+        if (minTemp == null && maxTemp == null && isActive == null && startDate == null && endDate == null) {
+            Page<Record> records = recordRepository.findAllWithMatching(pageable);
+            return records.map(recordMapper::toDto);
+        }
+        
+        // 필터 조건이 있는 경우 필터링 조회
+        Page<Record> records = recordRepository.findByFiltersWithMatching(
+                minTemp, maxTemp, isActive, startDate, endDate, pageable);
+        return records.map(recordMapper::toDto);
     }
 
     private Map<String, Object> createSummary(List<Answer> answers, Map<Long, Integer> questionOrderMap) {

@@ -4,8 +4,8 @@ spring:
   
   datasource:
     url: jdbc:postgresql://localhost:5432/relationship_tracker
-    username: ${DB_USERNAME:user}
-    password: ${DB_PASSWORD:password}
+    username: ${DB_USERNAME:backsunghyun}
+    password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -17,8 +17,14 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate  # Flyway로 스키마 관리하므로 validate 사용
     show-sql: false
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true  # 기존 DB가 있어도 시작 가능
+    validate-on-migrate: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

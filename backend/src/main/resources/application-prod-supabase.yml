@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    # Session Pooler (IPv4 지원)
+    url: jdbc:postgresql://${SUPABASE_POOLER_HOST:aws-1-ap-northeast-1.pooler.supabase.com}:${SUPABASE_POOLER_PORT:5432}/${SUPABASE_DATABASE:postgres}?user=${SUPABASE_POOLER_USER:postgres.ffpffyhihxezvlrsxlvf}&password=${SUPABASE_DB_PASSWORD:SoyoWing1004!!}&sslmode=require
+    username: ${SUPABASE_POOLER_USER:postgres.ffpffyhihxezvlrsxlvf}
+    password: ${SUPABASE_DB_PASSWORD:SoyoWing1004!!}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10  # Supabase 무료 티어: 최대 60 연결
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway로 스키마 관리
+    show-sql: false
+  
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true  # 기존 DB가 있어도 시작 가능
+    validate-on-migrate: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+logging:
+  level:
+    com.rstracker: INFO  # 프로덕션에서는 INFO 이상
+    org.springframework: WARN
+    org.hibernate: WARN
+    org.hibernate.SQL: WARN
+

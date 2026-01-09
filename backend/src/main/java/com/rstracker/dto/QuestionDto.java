@@ -14,6 +14,7 @@ public class QuestionDto {
     private Long id;
     private String questionText;
     private String questionType;
+    private String questionCategory; // INITIAL_MATCHING, TEMPERATURE_REFINE
     private Integer order;
     private Boolean isActive;
     private Integer version;

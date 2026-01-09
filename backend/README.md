@@ -13,6 +13,32 @@ Spring Boot 기반 백엔드 API 서버입니다.
 
 ## 실행 방법
 
+### 옵션 0: Docker Compose 사용 ⭐ (추천 - 격리된 환경)
+
+Docker를 사용하여 백엔드와 PostgreSQL을 함께 실행합니다. 로컬 환경과 충돌 없이 개발할 수 있습니다.
+
+```bash
+# 프로젝트 루트 디렉토리에서 실행
+docker-compose up -d
+
+# 로그 확인
+docker-compose logs -f backend
+
+# 중지
+docker-compose down
+```
+
+자세한 내용은 [Docker 설정 가이드](./docs/DOCKER_SETUP.md) 참고
+
+**접속 정보:**
+- API: http://localhost:8080/api
+- Swagger UI: http://localhost:8080/api/swagger-ui.html
+- PostgreSQL: localhost:5433 (데이터베이스: relationship_tracker, 사용자: rstracker)
+
+---
+
+### 옵션 1: 로컬 환경에서 실행
+
 ### 1. PostgreSQL 데이터베이스 설정
 
 데이터베이스를 생성합니다:
@@ -21,17 +47,43 @@ Spring Boot 기반 백엔드 API 서버입니다.
 CREATE DATABASE relationship_tracker;
 ```
 
-### 2. 환경 변수 설정
+### 2. 데이터베이스 설정
 
-`src/main/resources/application.yml` 파일을 수정하거나 환경 변수로 설정:
+#### 옵션 1: Supabase (PostgreSQL) - 추천 ⭐ (무료 티어)
 
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/relationship_tracker
-    username: your_username
-    password: your_password
+1. **Supabase 가입 및 프로젝트 생성**: https://supabase.com
+2. **연결 정보 확인**: Settings → Database → Connection String (JDBC)
+3. **환경 변수 설정**:
+```bash
+export SUPABASE_HOST=db.xxxxx.supabase.co
+export SUPABASE_DB_PASSWORD=your-password
 ```
+
+4. **프로덕션 프로파일로 실행**:
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=prod-supabase
+```
+
+자세한 설정은 [Supabase 설정 가이드](./docs/SUPABASE_SETUP.md) 참고
+
+#### 옵션 2: 로컬 PostgreSQL
+
+1. **데이터베이스 생성** (이미 생성되어 있으면 생략):
+```sql
+CREATE DATABASE relationship_tracker;
+```
+
+2. **애플리케이션 실행**:
+```bash
+mvn spring-boot:run -DskipTests
+```
+
+**Flyway 마이그레이션**:
+- 애플리케이션 시작 시 Flyway가 자동으로 스키마를 생성합니다
+- `src/main/resources/db/migration/` 디렉토리의 마이그레이션 파일이 자동 실행됩니다
+- `DataInitializer`가 질문 데이터를 자동으로 생성합니다
+
+자세한 내용은 [Supabase 설정 가이드](./docs/SUPABASE_SETUP.md) 참고
 
 ### 3. 애플리케이션 실행
 

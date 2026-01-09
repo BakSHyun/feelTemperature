@@ -2,6 +2,7 @@ package com.rstracker.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,10 +11,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
+    @NonNull
     private final RateLimitInterceptor rateLimitInterceptor;
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000", "http://localhost:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
@@ -22,7 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
     
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(@NonNull InterceptorRegistry registry) {
         // API Rate Limiting 적용 (매칭 생성은 제외 - 별도 처리 가능)
         registry.addInterceptor(rateLimitInterceptor)
                 .addPathPatterns("/**")

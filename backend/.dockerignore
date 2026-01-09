@@ -1,0 +1,33 @@
+# Maven 빌드 산출물
+target/
+!target/*.jar
+
+# IDE 설정
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# 로그 파일
+*.log
+
+# Git
+.git/
+.gitignore
+
+# 테스트 결과
+test-results/
+
+# 환경 변수 파일
+.env
+.env.local
+
+# 문서 (선택사항 - 필요시 주석 해제)
+# docs/
+# *.md
+

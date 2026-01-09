@@ -30,7 +30,7 @@ public class QuestionChoice {
     @Column(nullable = false, length = 100)
     private String choiceValue;
 
-    @Column(nullable = false)
+    @Column(name = "\"order\"", nullable = false)
     private Integer order;
 
     @Column(nullable = false)
